@@ -3,6 +3,13 @@
 > Living memory layer for the Ongo companion robot.
 > Built for InteractionLabs by Sameer M. — Paris, May 2026.
 
+
+<img width="1208" height="832" alt="image" src="https://github.com/user-attachments/assets/dcf31a47-940d-4449-82c2-829aaa957d82" />
+<img width="922" height="762" alt="image" src="https://github.com/user-attachments/assets/2f166582-060f-433c-a848-16a5e5f85679" />
+<img width="1007" height="762" alt="image" src="https://github.com/user-attachments/assets/722dcd2d-f754-4ad2-81bc-122a9ac0168d" />
+<img width="907" height="781" alt="image" src="https://github.com/user-attachments/assets/826a4ba6-628e-4640-a09c-ed44d0f27535" />
+
+
 A local-first, privacy-respecting memory system that turns Ongo from
 *"a desk lamp that listens"* into *"a desk lamp that remembers you."*
 Face & voice recognition tied to a per-user store of episodes,
