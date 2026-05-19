@@ -1,0 +1,26 @@
+# OngoMemory-Companion runtime config.
+
+storage:
+  # Either "in_memory", "sqlite", or "sqlite+qdrant" (split).
+  backend: sqlite
+  sqlite_path: /data/memory.db
+
+embedder:
+  type: minilm                   # minilm | deterministic
+  model: sentence-transformers/all-MiniLM-L6-v2
+  device: cpu
+
+ranker:
+  weights:
+    vec: 0.55
+    recency: 0.25
+    entity: 0.20
+  recency_half_life_days: 3.0
+
+habits:
+  min_observations: 3
+  window_minutes: 90
+
+privacy:
+  # Memory NEVER round-trips to cloud unless the user explicitly exports.
+  allow_cloud_export: false

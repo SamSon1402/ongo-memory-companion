@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OngoMemory-Companion — Living Memory Layer | InteractionLabs</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5f1ea;
+  --paper-2:#ebe5da;
+  --ink:#1a1814;
+  --ink-2:#3a352c;
+  --ink-3:#6b6356;
+  --ink-4:#a59c8d;
+  --rule:#d8d0c0;
+  --rule-soft:#e6dfd1;
+  --plum:#6b4a8a;
+  --plum-soft:rgba(107,74,138,0.1);
+  --plum-line:rgba(107,74,138,0.3);
+  --warm:#c4663a;
+  --leaf:#5c7a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Geist',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(107,74,138,0.04), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence baseFrequency='0.9'/><feColorMatrix values='0 0 0 0 0.1, 0 0 0 0 0.09, 0 0 0 0 0.06, 0 0 0 0.03 0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");
+  font-size:15px;
+  line-height:1.55;
+}
+.serif{font-family:'Instrument Serif',serif}
+.mono{font-family:'Geist Mono',monospace}
+
+/* Header */
+.hdr{
+  border-bottom:1px solid var(--rule);
+  padding:20px 40px;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  background:rgba(245,241,234,0.94);backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:30;
+}
+.brand-name{
+  font-family:'Instrument Serif',serif;font-size:32px;line-height:1;letter-spacing:-0.5px;
+  font-weight:400;
+}
+.brand-name i{font-style:italic;color:var(--plum)}
+.brand-sub{
+  font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);
+  letter-spacing:2.5px;text-transform:uppercase;margin-top:6px;
+}
+.hdr-meta{font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink-3);display:flex;gap:18px;align-items:center}
+.hdr-meta span{display:flex;align-items:center;gap:6px}
+.dot-lit{width:6px;height:6px;border-radius:50%;background:var(--leaf);box-shadow:0 0 6px var(--leaf)}
+
+/* Shell */
+.shell{max-width:1500px;margin:0 auto;padding:36px 40px 60px}
+
+/* Hero */
+.hero{
+  display:grid;grid-template-columns:1.4fr 1fr;gap:48px;
+  padding-bottom:36px;border-bottom:1px solid var(--rule);margin-bottom:32px;
+}
+.hero h1{
+  font-family:'Instrument Serif',serif;font-size:64px;font-weight:400;line-height:1;
+  letter-spacing:-2px;
+}
+.hero h1 i{font-style:italic;color:var(--plum)}
+.hero p{
+  font-size:17px;color:var(--ink-2);max-width:600px;margin-top:18px;
+  line-height:1.55;
+}
+.hero-tag{
+  font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:18px;
+}
+.hero-tag::before{content:'§ ';color:var(--plum)}
+.hero-aside{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:6px;
+  padding:24px;font-family:'Instrument Serif',serif;
+  position:relative;
+}
+.hero-aside::before{
+  content:'';position:absolute;top:24px;left:-1px;width:3px;height:60%;background:var(--plum);
+}
+.hero-aside .label{
+  font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;
+}
+.hero-aside .body{font-size:18px;line-height:1.4;color:var(--ink-2)}
+.hero-aside .body em{color:var(--plum)}
+
+/* Main grid */
+.grid{display:grid;grid-template-columns:380px 1fr 360px;gap:24px}
+@media(max-width:1200px){.grid{grid-template-columns:1fr;}}
+
+/* Panels */
+.panel{
+  background:rgba(255,253,247,0.6);
+  border:1px solid var(--rule);
+  border-radius:8px;
+  overflow:hidden;
+}
+.panel-head{
+  padding:16px 20px;
+  border-bottom:1px solid var(--rule-soft);
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.panel-title{
+  font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;
+  letter-spacing:-0.3px;
+}
+.panel-title i{font-style:italic;color:var(--plum)}
+.panel-meta{
+  font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);
+  letter-spacing:1.5px;text-transform:uppercase;
+}
+.panel-body{padding:20px}
+
+/* Person card */
+.person{
+  text-align:center;padding:8px 4px 16px;
+}
+.face{
+  width:88px;height:88px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #f0d4b8, #c89978 65%, #8a6a4e);
+  margin:0 auto 14px;position:relative;
+  border:2px solid var(--rule);
+  box-shadow:0 4px 14px rgba(0,0,0,0.08);
+}
+.face::before,.face::after{
+  content:'';position:absolute;width:8px;height:8px;border-radius:50%;
+  background:var(--ink);top:38%;
+}
+.face::before{left:30%}
+.face::after{right:30%}
+.face-id{
+  font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);
+  letter-spacing:1.5px;
+}
+.person-name{
+  font-family:'Instrument Serif',serif;font-size:32px;line-height:1.1;
+  margin-top:6px;
+}
+.person-name i{font-style:italic;color:var(--plum)}
+.person-tag{font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink-3);letter-spacing:1.5px;margin-top:4px;text-transform:uppercase}
+
+.trust-bar{
+  display:flex;align-items:center;gap:8px;margin:18px 0 6px;
+  font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:1.5px;
+}
+.trust-track{flex:1;height:4px;background:var(--rule);border-radius:2px;overflow:hidden}
+.trust-fill{height:100%;background:linear-gradient(90deg,var(--leaf),var(--plum));width:0%;transition:width 0.8s}
+
+/* Facts list */
+.facts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.fact{
+  display:flex;gap:12px;padding:11px 14px;
+  background:var(--paper-2);border-radius:6px;border:1px solid var(--rule-soft);
+}
+.fact-k{
+  font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:1.5px;
+  min-width:74px;padding-top:2px;
+}
+.fact-v{
+  font-family:'Instrument Serif',serif;font-size:17px;color:var(--ink);
+  line-height:1.3;flex:1;
+}
+.fact-v i{font-style:italic;color:var(--plum)}
+.fact-confidence{
+  font-family:'Geist Mono',monospace;font-size:9px;color:var(--ink-4);
+  align-self:flex-end;
+}
+
+/* Stream / conversation */
+.stream{display:flex;flex-direction:column;gap:0}
+.stream-day{
+  font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);
+  letter-spacing:2px;text-transform:uppercase;
+  padding:14px 0 10px;border-bottom:1px solid var(--rule-soft);margin-bottom:14px;
+}
+.stream-day:first-child{padding-top:0}
+.turn{margin-bottom:18px;padding-bottom:18px;border-bottom:1px dashed var(--rule-soft)}
+.turn:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+.turn-time{
+  font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);letter-spacing:1.5px;
+  margin-bottom:8px;
+}
+.turn-user{
+  font-family:'Instrument Serif',serif;font-size:20px;line-height:1.35;color:var(--ink);
+  margin-bottom:8px;
+}
+.turn-user::before{content:'— ';color:var(--ink-4)}
+.turn-ongo{
+  font-size:14px;color:var(--ink-2);line-height:1.55;
+  padding-left:14px;border-left:2px solid var(--plum);
+}
+.turn-mem{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-left:14px;
+}
+.mem-chip{
+  font-family:'Geist Mono',monospace;font-size:10px;
+  padding:3px 8px;background:var(--plum-soft);color:var(--plum);
+  border:1px solid var(--plum-line);border-radius:100px;
+  letter-spacing:0.5px;
+}
+.mem-chip.new{background:var(--warm);color:var(--paper);border-color:var(--warm)}
+.mem-chip.recall{background:transparent;color:var(--plum)}
+
+/* Day badge */
+.day-pill{
+  display:inline-block;padding:2px 9px;background:var(--ink);color:var(--paper);
+  font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:1.5px;
+  border-radius:100px;margin-right:8px;
+}
+.day-pill.d3{background:var(--plum)}
+
+/* Right column */
+.signal-list{display:flex;flex-direction:column;gap:14px}
+.signal{
+  padding:14px 16px;background:var(--paper-2);border-radius:6px;
+  border:1px solid var(--rule-soft);
+}
+.signal-head{
+  display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;
+}
+.signal-title{
+  font-family:'Instrument Serif',serif;font-size:17px;line-height:1.2;
+}
+.signal-title i{font-style:italic;color:var(--plum)}
+.signal-conf{font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);letter-spacing:1px}
+.signal-body{font-size:13px;color:var(--ink-2);line-height:1.5}
+.signal-meta{
+  font-family:'Geist Mono',monospace;font-size:9px;color:var(--ink-4);
+  letter-spacing:1px;text-transform:uppercase;margin-top:8px;
+}
+
+/* Memory stats */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule-soft);border-radius:6px;overflow:hidden;border:1px solid var(--rule-soft)}
+.stat-cell{background:rgba(255,253,247,0.7);padding:14px 16px}
+.stat-num{font-family:'Instrument Serif',serif;font-size:30px;line-height:1;color:var(--ink)}
+.stat-num i{font-style:italic;color:var(--plum)}
+.stat-label{font-family:'Geist Mono',monospace;font-size:9px;color:var(--ink-3);letter-spacing:1.5px;text-transform:uppercase;margin-top:5px}
+
+/* Controls */
+.control-row{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--rule-soft);background:var(--paper-2)}
+.btn{
+  flex:1;padding:10px 14px;border-radius:6px;border:1px solid var(--ink-3);
+  background:var(--paper);color:var(--ink);font-family:'Geist',sans-serif;font-size:13px;
+  cursor:pointer;transition:all 0.2s;font-weight:500;
+}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.primary{background:var(--plum);border-color:var(--plum);color:var(--paper)}
+.btn.primary:hover{background:#553a6f}
+
+/* Foot */
+.foot{
+  margin-top:36px;padding-top:18px;border-top:1px solid var(--rule);
+  font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink-3);letter-spacing:1.5px;
+  display:flex;justify-content:space-between;text-transform:uppercase;
+}
+
+/* Pulse for newly added memory */
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(196,102,58,0.45)} 70%{box-shadow:0 0 0 8px rgba(196,102,58,0)} 100%{box-shadow:0 0 0 0 rgba(196,102,58,0)}}
+.pulse{animation:pulse 1.4s ease-out 2}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="brand-name">Ongo<i>Memory</i>·Companion</div>
+    <div class="brand-sub">Living memory layer · v0.4</div>
+  </div>
+  <div class="hdr-meta">
+    <span><span class="dot-lit"></span>face·voice·episodic synced</span>
+    <span>local-first · SQLite + qdrant</span>
+    <span>247 episodes · 18 entities</span>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div class="hero">
+    <div>
+      <div class="hero-tag">The product is the memory.</div>
+      <h1>Ongo doesn't<br>just <i>see</i> you.<br>It <i>remembers</i> you.</h1>
+      <p>A persistent personalization layer for the companion robot — face & voice recognition, episodic conversation memory, and quiet habit extraction. Step through three days of getting to know Sam.</p>
+    </div>
+    <div class="hero-aside">
+      <div class="label">Designed for</div>
+      <div class="body">"Ambient presence, contextual awareness, <em>living memory</em>." A clean library API: <code style="font-family:'Geist Mono'">memory.recall(user, "calendar")</code> returns ranked episodes in &lt; 30 ms.</div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- LEFT: Person & Facts -->
+    <div>
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-head">
+          <div class="panel-title">Who Ongo <i>knows</i></div>
+          <div class="panel-meta">user · primary</div>
+        </div>
+        <div class="panel-body">
+          <div class="person">
+            <div class="face"></div>
+            <div class="face-id">face_id: f7a2 · voice_id: v3c1</div>
+            <div class="person-name" id="personName">a <i>stranger</i></div>
+            <div class="person-tag" id="personTag">first visit · day 1</div>
+            <div class="trust-bar">
+              <span>familiarity</span>
+              <div class="trust-track"><div class="trust-fill" id="trustFill"></div></div>
+              <span id="trustPct">3%</span>
+            </div>
+          </div>
+
+          <div class="facts" id="factsList">
+            <div class="fact">
+              <span class="fact-k">name</span>
+              <span class="fact-v" id="factName"><i>—</i></span>
+            </div>
+            <div class="fact">
+              <span class="fact-k">routine</span>
+              <span class="fact-v" id="factRoutine"><i>—</i></span>
+            </div>
+            <div class="fact">
+              <span class="fact-k">prefers</span>
+              <span class="fact-v" id="factPref"><i>—</i></span>
+            </div>
+            <div class="fact">
+              <span class="fact-k">cares about</span>
+              <span class="fact-v" id="factCares"><i>—</i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Memory <i>tally</i></div>
+          <div class="panel-meta">since day 1</div>
+        </div>
+        <div class="panel-body">
+          <div class="stats-row">
+            <div class="stat-cell">
+              <div class="stat-num"><i id="statEpisodes">0</i></div>
+              <div class="stat-label">episodes</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-num"><i id="statRecall">0</i></div>
+              <div class="stat-label">recalls</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-num"><i id="statHabits">0</i></div>
+              <div class="stat-label">habits inferred</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-num"><i id="statLatency">28</i><span style="font-size:14px;color:var(--ink-3)">ms</span></div>
+              <div class="stat-label">recall p50</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: Stream -->
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Conversation <i>stream</i></div>
+          <div class="panel-meta" id="streamMeta">awaiting day 1</div>
+        </div>
+        <div class="panel-body" id="streamBody" style="max-height:680px;overflow-y:auto">
+          <div style="text-align:center;color:var(--ink-3);padding:60px 20px;font-style:italic" class="serif">
+            <div style="font-size:24px;margin-bottom:8px">Press <em style="color:var(--plum)">Begin day 1</em> below.</div>
+            <div style="font-size:14px">Watch Ongo build a memory of Sam over three days.</div>
+          </div>
+        </div>
+        <div class="control-row">
+          <button class="btn primary" id="btnDay">▶ Begin Day 1</button>
+          <button class="btn" id="btnAsk">Ask "what was I working on?"</button>
+          <button class="btn" id="btnReset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Signals -->
+    <div>
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-head">
+          <div class="panel-title">Inferred <i>signals</i></div>
+          <div class="panel-meta">habits · context</div>
+        </div>
+        <div class="panel-body">
+          <div class="signal-list" id="signalList">
+            <div class="signal" style="opacity:0.5">
+              <div class="signal-head">
+                <div class="signal-title">No signals yet</div>
+                <div class="signal-conf">—</div>
+              </div>
+              <div class="signal-body">Ongo will surface habits once it has 3+ episodes about the same topic.</div>
+              <div class="signal-meta">awaiting data</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Library <i>API</i></div>
+          <div class="panel-meta">core surface</div>
+        </div>
+        <div class="panel-body">
+          <pre style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink-2);line-height:1.7;background:var(--paper-2);padding:14px;border-radius:6px;border:1px solid var(--rule-soft);overflow-x:auto"><span style="color:var(--plum)">from</span> ongo_memory <span style="color:var(--plum)">import</span> Memory
+
+mem = Memory(user=<span style="color:var(--warm)">"f7a2"</span>)
+
+<span style="color:var(--ink-3)"># write</span>
+mem.episode(
+  topic=<span style="color:var(--warm)">"calendar"</span>,
+  text=<span style="color:var(--warm)">"call w/ Joonatan 4pm"</span>,
+  vec=embed(...))
+
+<span style="color:var(--ink-3)"># read</span>
+hits = mem.recall(
+  <span style="color:var(--warm)">"what was I doing yesterday?"</span>,
+  k=<span style="color:var(--plum)">5</span>)
+
+<span style="color:var(--ink-3)"># habits surface automatically</span>
+mem.habits()
+<span style="color:var(--ink-3)"># → [Habit(routine=morning_coffee, conf=0.82)]</span></pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <span>github.com/samson1402/ongo-memory-companion · MIT</span>
+    <span>local-first · privacy-respecting · &lt; 30ms recall · 247-episode benchmark</span>
+  </div>
+</div>
+
+<script>
+const state = {
+  day:0, episodes:0, recalls:0, habits:0, trust:3,
+  signals:[]
+};
+
+const script = {
+  1: {
+    label:'Day 1 · Monday — first meeting',
+    turns:[
+      {t:'09:14', user:"Hey, I'm Sam.", ongo:"Nice to meet you. I'll remember your face and voice. What should I call you?", mem:[{type:'new',label:'face_id: f7a2'},{type:'new',label:'voice_id: v3c1'}], updates:{name:'Sam',tag:'familiar · day 1',trust:18}},
+      {t:'09:16', user:"Just Sam is fine. I work on machine learning.", ongo:"Got it — Sam, ML engineer. I'll try not to ask the same thing twice.", mem:[{type:'new',label:'profession: ML eng'}], updates:{cares:'machine learning'}},
+      {t:'14:32', user:"Remind me to call Joonatan at 4.", ongo:"Sure — 4pm, call Joonatan. I don't know who that is yet, but I'll learn.", mem:[{type:'new',label:'entity: Joonatan'},{type:'new',label:'episode: meeting 16:00'}]},
+      {t:'18:01', user:"Goodnight Ongo.", ongo:"Goodnight Sam. I noticed you ended your day around 6 — I'll watch if that's a pattern.", mem:[{type:'new',label:'observation: EOD ~18:00'}], updates:{routine:'EOD ~6pm (observed once)'}}
+    ],
+    signal:null
+  },
+  2: {
+    label:'Day 2 · Tuesday — patterns starting',
+    turns:[
+      {t:'08:47', user:"Morning.", ongo:"Morning, Sam. Coffee already?", mem:[{type:'recall',label:'recall: name=Sam'}], updates:{trust:42}},
+      {t:'08:48', user:"How'd you know?", ongo:"Yesterday you mentioned coffee around 8:50 — figured it might be a habit.", mem:[{type:'recall',label:'recall: coffee@~08:50'},{type:'new',label:'habit pending: morning_coffee'}]},
+      {t:'14:00', user:"Did I have a call with Joonatan yesterday?", ongo:"Yes — at 4pm. You didn't say how it went. Want me to ask later?", mem:[{type:'recall',label:'episode: Joonatan 16:00 d1'}], updates:{}},
+      {t:'17:45', user:"Going to the gym.", ongo:"Okay. Calisthenics again, or something different?", mem:[{type:'new',label:'topic: calisthenics'},{type:'recall',label:'entity: gym'}], updates:{cares:'machine learning, calisthenics',trust:58}}
+    ],
+    signal:{title:'Sam takes coffee around 8:50',conf:'conf 0.71',body:'Two consecutive mornings with coffee mention in the 08:47–08:52 window. One more datapoint and I\'ll lock this as a habit.',meta:'habit pending · 2/3 obs'}
+  },
+  3: {
+    label:'Day 3 · Wednesday — Ongo anticipates',
+    turns:[
+      {t:'08:49', user:"Hey.", ongo:"Morning Sam. Coffee's looking right on schedule — third day in a row. Want me to set a 15-min focus block after?", mem:[{type:'recall',label:'habit: morning_coffee (locked)'},{type:'new',label:'proactive: focus_block'}], updates:{trust:78,routine:'coffee ~08:50 · EOD ~18:00'}},
+      {t:'10:22', user:"What was I working on yesterday afternoon?", ongo:"You were prepping for the call with Joonatan — and asked about it again today. The InteractionLabs role, I think.", mem:[{type:'recall',label:'episode: Joonatan d1'},{type:'recall',label:'episode: Joonatan q d2'},{type:'recall',label:'entity: InteractionLabs'}], updates:{cares:'ML, calisthenics, job search'}},
+      {t:'15:30', user:"I've been heads-down for two hours.", ongo:"I noticed. Stretch? You usually start fading after long focus sessions.", mem:[{type:'new',label:'observation: 2h focus'},{type:'recall',label:'pattern: focus → fade'}], updates:{trust:91}},
+      {t:'17:58', user:"Calling it.", ongo:"6pm again — I'll mark today as a clean day. Tomorrow morning, usual coffee?", mem:[{type:'recall',label:'habit: EOD ~18:00 (locked)'}], updates:{routine:'coffee ~08:50 · EOD ~18:00 · gym evening'}}
+    ],
+    signal:{title:'Long focus → fade at ~2h',conf:'conf 0.84',body:'Sam consistently slows down after roughly two hours of uninterrupted work. Suggest a stretch nudge.',meta:'habit locked · 3/3 obs'}
+  }
+};
+
+function renderTurn(dayLabel, turn, isNewDay){
+  const body = document.getElementById('streamBody');
+  if(body.querySelector('div[style*="font-style"]')) body.innerHTML = '';
+
+  if(isNewDay){
+    const day = document.createElement('div');
+    day.className = 'stream-day';
+    day.innerHTML = `<span class="day-pill ${state.day===3?'d3':''}">DAY ${state.day}</span>${dayLabel}`;
+    body.appendChild(day);
+  }
+
+  const t = document.createElement('div');
+  t.className = 'turn';
+  const memHtml = turn.mem.map(m=>`<span class="mem-chip ${m.type}">${m.type==='new'?'＋':'↺'} ${m.label}</span>`).join('');
+  t.innerHTML = `
+    <div class="turn-time">${turn.t}</div>
+    <div class="turn-user">${turn.user}</div>
+    <div class="turn-ongo">${turn.ongo}</div>
+    <div class="turn-mem">${memHtml}</div>
+  `;
+  body.appendChild(t);
+  body.scrollTop = body.scrollHeight;
+
+  // Pulse newest memory chips
+  t.querySelectorAll('.mem-chip.new').forEach(c=>c.classList.add('pulse'));
+
+  // Update counters
+  state.episodes += turn.mem.filter(m=>m.type==='new').length;
+  state.recalls += turn.mem.filter(m=>m.type==='recall').length;
+  document.getElementById('statEpisodes').textContent = state.episodes;
+  document.getElementById('statRecall').textContent = state.recalls;
+
+  // Apply person updates
+  const u = turn.updates || {};
+  if(u.name){ document.getElementById('personName').innerHTML = `<i>${u.name}</i>` }
+  if(u.tag){ document.getElementById('personTag').textContent = u.tag }
+  if(u.trust !== undefined){
+    state.trust = u.trust;
+    document.getElementById('trustFill').style.width = state.trust+'%';
+    document.getElementById('trustPct').textContent = state.trust+'%';
+  }
+  if(u.name) document.getElementById('factName').innerHTML = u.name;
+  if(u.routine) document.getElementById('factRoutine').innerHTML = u.routine;
+  if(u.pref) document.getElementById('factPref').innerHTML = u.pref;
+  if(u.cares) document.getElementById('factCares').innerHTML = u.cares;
+}
+
+function addSignal(sig){
+  if(!sig) return;
+  const list = document.getElementById('signalList');
+  // remove placeholder
+  if(list.querySelector('[style*="opacity"]')) list.innerHTML = '';
+  state.habits++;
+  document.getElementById('statHabits').textContent = state.habits;
+
+  const s = document.createElement('div');
+  s.className = 'signal';
+  s.innerHTML = `
+    <div class="signal-head">
+      <div class="signal-title"><i>${sig.title}</i></div>
+      <div class="signal-conf">${sig.conf}</div>
+    </div>
+    <div class="signal-body">${sig.body}</div>
+    <div class="signal-meta">${sig.meta}</div>
+  `;
+  list.insertBefore(s, list.firstChild);
+}
+
+async function playDay(n){
+  state.day = n;
+  const data = script[n];
+  document.getElementById('streamMeta').textContent = data.label.toLowerCase();
+  for(let i=0;i<data.turns.length;i++){
+    renderTurn(data.label, data.turns[i], i===0);
+    await sleep(900);
+  }
+  if(data.signal){
+    await sleep(400);
+    addSignal(data.signal);
+  }
+  // Adjust button for next state
+  if(n<3){
+    document.getElementById('btnDay').textContent = `▶ Continue to Day ${n+1}`;
+  } else {
+    document.getElementById('btnDay').textContent = '✓ Three days complete';
+    document.getElementById('btnDay').disabled = true;
+    document.getElementById('btnDay').style.opacity = 0.5;
+  }
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+document.getElementById('btnDay').addEventListener('click', async ()=>{
+  const next = state.day+1;
+  if(next>3) return;
+  document.getElementById('btnDay').disabled = true;
+  await playDay(next);
+  document.getElementById('btnDay').disabled = (next>=3);
+});
+
+document.getElementById('btnAsk').addEventListener('click', ()=>{
+  if(state.episodes < 2){
+    alert("Ongo doesn't have enough memory yet — play through Day 1 first.");
+    return;
+  }
+  const body = document.getElementById('streamBody');
+  const t = document.createElement('div');
+  t.className = 'turn';
+  t.innerHTML = `
+    <div class="turn-time">${new Date().toTimeString().slice(0,5)} · live query</div>
+    <div class="turn-user">What was I working on?</div>
+    <div class="turn-ongo">${state.day>=3?'Mostly the InteractionLabs job thread — the call with Joonatan, then prep around it. You also kept circling back to the calisthenics side.':state.day===2?'Yesterday you were preparing for the Joonatan call. Today you mentioned the gym again.':'You\'ve only told me one thing so far — that you work on ML.'}</div>
+    <div class="turn-mem">
+      <span class="mem-chip recall">↺ recall.k=5 · ${state.recalls+state.episodes} episodes scanned</span>
+      <span class="mem-chip recall">↺ p50=27ms</span>
+    </div>
+  `;
+  body.appendChild(t);
+  body.scrollTop = body.scrollHeight;
+  state.recalls += 3;
+  document.getElementById('statRecall').textContent = state.recalls;
+});
+
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  state.day=0; state.episodes=0; state.recalls=0; state.habits=0; state.trust=3;
+  document.getElementById('statEpisodes').textContent = '0';
+  document.getElementById('statRecall').textContent = '0';
+  document.getElementById('statHabits').textContent = '0';
+  document.getElementById('trustFill').style.width = '3%';
+  document.getElementById('trustPct').textContent = '3%';
+  document.getElementById('personName').innerHTML = 'a <i>stranger</i>';
+  document.getElementById('personTag').textContent = 'first visit · day 1';
+  ['factName','factRoutine','factPref','factCares'].forEach(id=>document.getElementById(id).innerHTML='<i>—</i>');
+  document.getElementById('streamBody').innerHTML = `
+    <div style="text-align:center;color:var(--ink-3);padding:60px 20px;font-style:italic" class="serif">
+      <div style="font-size:24px;margin-bottom:8px">Press <em style="color:var(--plum)">Begin day 1</em> below.</div>
+      <div style="font-size:14px">Watch Ongo build a memory of Sam over three days.</div>
+    </div>
+  `;
+  document.getElementById('signalList').innerHTML = `
+    <div class="signal" style="opacity:0.5">
+      <div class="signal-head"><div class="signal-title">No signals yet</div><div class="signal-conf">—</div></div>
+      <div class="signal-body">Ongo will surface habits once it has 3+ episodes about the same topic.</div>
+      <div class="signal-meta">awaiting data</div>
+    </div>
+  `;
+  document.getElementById('btnDay').textContent = '▶ Begin Day 1';
+  document.getElementById('btnDay').disabled = false;
+  document.getElementById('btnDay').style.opacity = 1;
+  document.getElementById('streamMeta').textContent = 'awaiting day 1';
+});
+</script>
+</body>
+</html>
